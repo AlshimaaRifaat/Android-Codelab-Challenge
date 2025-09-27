@@ -39,7 +39,7 @@ internal class Home : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setSupportActionBar(binding.toolbar)
+        setSupportActionBar(binding.toolbar.root)
         model = ViewModelProvider(this)[HomeViewModel::class.java]
 
         // Setup the adapter and the recycler view

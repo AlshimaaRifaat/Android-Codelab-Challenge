@@ -12,7 +12,7 @@
     <string name="select_location_on_map">Select Location on Map</string>
     <string name="no_location_selected">No location selected</string>
     <string name="clear_location">Clear Location</string>
-    <string name="location_selected">Location: %1$s, %2$s</string>
+    <string name="location_selected">Location: %1$.4f, %2$.4f</string>
     <string name="location_permission_required">Location permission is required to select a location for your memo</string>
     <string name="confirm_location">Confirm Location</string>
     <string name="notification_channel_name">Memo Reminders</string>

@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.sap.codelab.databinding.ActivityViewMemoBinding
 import com.sap.codelab.model.Memo
-import com.sap.codelab.utils.extensions.showToast
 import kotlinx.coroutines.launch
 
 internal const val BUNDLE_MEMO_ID: String = "memoId"
@@ -22,7 +21,7 @@ internal class ViewMemo : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityViewMemoBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setSupportActionBar(binding.toolbar)
+        setSupportActionBar(binding.toolbar.root)
         // Initialize views with the passed memo id
         val model = ViewModelProvider(this)[ViewMemoViewModel::class.java]
         if (savedInstanceState == null) {

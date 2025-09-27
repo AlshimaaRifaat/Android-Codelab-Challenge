@@ -44,7 +44,7 @@ class LocationPickerActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         binding = ActivityLocationPickerBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setSupportActionBar(binding.toolbar)
+        setSupportActionBar(binding.toolbar.root)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = getString(R.string.select_location)
 

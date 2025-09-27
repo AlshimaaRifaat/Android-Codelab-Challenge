@@ -18,7 +18,6 @@ import com.sap.codelab.databinding.ActivityCreateMemoBinding
 import com.sap.codelab.view.location.LocationPickerActivity
 import com.sap.codelab.utils.extensions.empty
 import com.sap.codelab.utils.extensions.showToast
-import com.sap.codelab.utils.extensions.hasLocationPermission
 
 /**
  * Activity that allows a user to create a new Memo.
@@ -33,7 +32,7 @@ internal class CreateMemo : AppCompatActivity() {
     private val locationPickerLauncher = registerForActivityResult(
         StartActivityForResult()
     ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
+        if (result.resultCode == RESULT_OK) {
             val data = result.data
             selectedLatitude = data?.getDoubleExtra(LocationPickerActivity.EXTRA_LATITUDE, 0.0) ?: 0.0
             selectedLongitude = data?.getDoubleExtra(LocationPickerActivity.EXTRA_LONGITUDE, 0.0) ?: 0.0
@@ -45,7 +44,7 @@ internal class CreateMemo : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityCreateMemoBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setSupportActionBar(binding.toolbar)
+        setSupportActionBar(binding.toolbar.root)
         model = ViewModelProvider(this)[CreateMemoViewModel::class.java]
         
         setupLocationSelection()
