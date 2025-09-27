@@ -4,8 +4,6 @@ The base is written in kotlin.
 
 (!)If you have the NDK plugin installed, please disable it for the project, as errors may occur.
 
-## 🚀 Quick Start
-
 ### Prerequisites
 - Android Studio (Narwhal Feature Drop or higher)
 - Google Maps API Key
