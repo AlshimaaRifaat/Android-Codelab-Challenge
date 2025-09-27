@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -19,6 +18,8 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.sap.codelab.R
 import com.sap.codelab.databinding.ActivityLocationPickerBinding
+import com.sap.codelab.utils.extensions.hasLocationPermission
+import com.sap.codelab.utils.extensions.showToast
 
 /**
  * Activity for selecting a location on a map for memo reminders.
@@ -27,7 +28,9 @@ class LocationPickerActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var binding: ActivityLocationPickerBinding
     private lateinit var map: GoogleMap
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private val fusedLocationClient: FusedLocationProviderClient by lazy {
+        LocationServices.getFusedLocationProviderClient(this)
+    }
     private var selectedMarker: Marker? = null
     private var selectedLocation: LatLng? = null
 
@@ -41,16 +44,17 @@ class LocationPickerActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         binding = ActivityLocationPickerBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = getString(R.string.select_location)
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
+        // Request location permission and get current location
+        if (!hasLocationPermission) {
+            requestLocationPermission()
+        }
         binding.confirmLocationFab.setOnClickListener {
             confirmLocation()
         }
@@ -76,17 +80,17 @@ class LocationPickerActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun selectLocation(latLng: LatLng) {
         selectedLocation = latLng
-        
+
         // Remove previous marker
         selectedMarker?.remove()
-        
+
         // Add new marker
         selectedMarker = map.addMarker(
             MarkerOptions()
                 .position(latLng)
                 .title("Selected Location")
         )
-        
+
         // Move camera to selected location
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
     }
@@ -100,10 +104,9 @@ class LocationPickerActivity : AppCompatActivity(), OnMapReadyCallback {
             setResult(RESULT_OK, resultIntent)
             finish()
         } ?: run {
-            Toast.makeText(this, "Please select a location on the map", Toast.LENGTH_SHORT).show()
+            showToast("Please select a location on the map")
         }
     }
-
 
     private fun checkLocationPermission(): Boolean {
         return ContextCompat.checkSelfPermission(
@@ -147,7 +150,7 @@ class LocationPickerActivity : AppCompatActivity(), OnMapReadyCallback {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getCurrentLocation()
             } else {
-                Toast.makeText(this, getString(R.string.location_permission_required), Toast.LENGTH_LONG).show()
+                showToast(getString(R.string.location_permission_required))
             }
         }
     }

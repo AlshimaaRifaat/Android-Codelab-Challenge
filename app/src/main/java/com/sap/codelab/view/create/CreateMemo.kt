@@ -7,8 +7,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatActivity
 import androidx.annotation.StringRes
 import androidx.core.app.ActivityCompat
@@ -18,6 +17,8 @@ import com.sap.codelab.R
 import com.sap.codelab.databinding.ActivityCreateMemoBinding
 import com.sap.codelab.view.location.LocationPickerActivity
 import com.sap.codelab.utils.extensions.empty
+import com.sap.codelab.utils.extensions.showToast
+import com.sap.codelab.utils.extensions.hasLocationPermission
 
 /**
  * Activity that allows a user to create a new Memo.
@@ -30,7 +31,7 @@ internal class CreateMemo : AppCompatActivity() {
     private var selectedLongitude: Double = 0.0
 
     private val locationPickerLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
+        StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val data = result.data
@@ -134,7 +135,7 @@ internal class CreateMemo : AppCompatActivity() {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 openLocationPicker()
             } else {
-                Toast.makeText(this, getString(R.string.location_permission_required), Toast.LENGTH_LONG).show()
+                showToast(getString(R.string.location_permission_required))
             }
         }
     }

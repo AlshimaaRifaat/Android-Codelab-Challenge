@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.sap.codelab.databinding.ActivityViewMemoBinding
 import com.sap.codelab.model.Memo
+import com.sap.codelab.utils.extensions.showToast
 import kotlinx.coroutines.launch
 
 internal const val BUNDLE_MEMO_ID: String = "memoId"
