@@ -28,7 +28,6 @@ internal class CreateMemo : AppCompatActivity() {
     private lateinit var model: CreateMemoViewModel
     private var selectedLatitude: Double = 0.0
     private var selectedLongitude: Double = 0.0
-    private var selectedAddress: String = ""
 
     private val locationPickerLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -37,7 +36,6 @@ internal class CreateMemo : AppCompatActivity() {
             val data = result.data
             selectedLatitude = data?.getDoubleExtra(LocationPickerActivity.EXTRA_LATITUDE, 0.0) ?: 0.0
             selectedLongitude = data?.getDoubleExtra(LocationPickerActivity.EXTRA_LONGITUDE, 0.0) ?: 0.0
-            selectedAddress = data?.getStringExtra(LocationPickerActivity.EXTRA_ADDRESS) ?: ""
             updateLocationUI()
         }
     }
@@ -108,7 +106,6 @@ internal class CreateMemo : AppCompatActivity() {
     private fun clearLocation() {
         selectedLatitude = 0.0
         selectedLongitude = 0.0
-        selectedAddress = ""
         updateLocationUI()
     }
 

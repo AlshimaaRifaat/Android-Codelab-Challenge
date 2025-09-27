@@ -41,24 +41,6 @@ object DebugHelper {
     }
     
     /**
-     * Calculate distance between two locations and log it.
-     */
-    fun logDistance(currentLocation: Location, memo: Memo) {
-        if (memo.reminderLatitude != 0.0 && memo.reminderLongitude != 0.0) {
-            val memoLocation = Location("memo").apply {
-                latitude = memo.reminderLatitude
-                longitude = memo.reminderLongitude
-            }
-            
-            val distance = currentLocation.distanceTo(memoLocation)
-            Log.d(TAG, "Distance to memo '${memo.title}': ${distance}m")
-            Log.d(TAG, "Within 200m threshold: ${distance <= 200}")
-        } else {
-            Log.d(TAG, "Memo '${memo.title}' has no location data")
-        }
-    }
-    
-    /**
      * Log current location for debugging.
      */
     fun logCurrentLocation(location: Location) {

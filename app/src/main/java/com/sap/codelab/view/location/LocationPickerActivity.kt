@@ -3,7 +3,6 @@ package com.sap.codelab.view.location
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Geocoder
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -19,8 +18,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.sap.codelab.R
-import java.io.IOException
-import java.util.Locale
 
 /**
  * Activity for selecting a location on a map for memo reminders.
@@ -35,7 +32,6 @@ class LocationPickerActivity : AppCompatActivity(), OnMapReadyCallback {
     companion object {
         const val EXTRA_LATITUDE = "extra_latitude"
         const val EXTRA_LONGITUDE = "extra_longitude"
-        const val EXTRA_ADDRESS = "extra_address"
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
     }
 
@@ -98,7 +94,6 @@ class LocationPickerActivity : AppCompatActivity(), OnMapReadyCallback {
             val resultIntent = Intent().apply {
                 putExtra(EXTRA_LATITUDE, location.latitude)
                 putExtra(EXTRA_LONGITUDE, location.longitude)
-                putExtra(EXTRA_ADDRESS, getAddressFromLocation(location))
             }
             setResult(RESULT_OK, resultIntent)
             finish()
@@ -107,21 +102,6 @@ class LocationPickerActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun getAddressFromLocation(latLng: LatLng): String {
-        return try {
-            val geocoder = Geocoder(this, Locale.getDefault())
-            @Suppress("DEPRECATION")
-            val addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
-            if (addresses?.isNotEmpty() == true) {
-                val address = addresses[0]
-                "${address.getAddressLine(0) ?: "Unknown Address"}"
-            } else {
-                "${latLng.latitude}, ${latLng.longitude}"
-            }
-        } catch (e: IOException) {
-            "${latLng.latitude}, ${latLng.longitude}"
-        }
-    }
 
     private fun checkLocationPermission(): Boolean {
         return ContextCompat.checkSelfPermission(
