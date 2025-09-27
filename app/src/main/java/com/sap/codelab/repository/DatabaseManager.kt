@@ -106,7 +106,7 @@ object DatabaseManager {
     }
     
     /**
-     * Get the database instance. Must be called after initialize().
+     * Get the database instance.
      */
     internal fun getDatabase(): Database {
         return database ?: throw IllegalStateException("Database not initialized. Call initialize() first.")
