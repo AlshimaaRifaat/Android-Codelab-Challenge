@@ -50,6 +50,40 @@ This document describes the simple implementation of location-based notification
 - **Custom Icons**: Uses app-specific notification icon
 - **Big Text Style**: Supports expandable notifications
 
+## Modern Kotlin Practices & UI Consistency
+
+### Kotlin Property Enhancements
+- The app leverages modern Kotlin features for clean, efficient, and maintainable code:
+  - `by lazy` is used for expensive or late-initialized properties (e.g., FusedLocationProviderClient).
+  - `lateinit` is used for properties initialized after construction (e.g., view binding, GoogleMap).
+  - Extension functions and properties (see `ActivityExtensions.kt`) are used for reusable logic, such as permission checks and showing Toasts.
+  - Lambdas are used for concise event handling and callbacks throughout the app.
+- These patterns optimize memory usage, improve code readability, and ensure a more standard, idiomatic Kotlin codebase.
+
+#### Example
+```kotlin
+private val fusedLocationClient: FusedLocationProviderClient by lazy {
+    LocationServices.getFusedLocationProviderClient(this)
+}
+
+// Extension function for Toast
+fun AppCompatActivity.showToast(message: String) {
+    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+}
+```
+
+### Reusable Shared Toolbar
+- The app uses a single, reusable toolbar layout (`res/layout/toolbar.xml`) included in all activities for UI consistency.
+- Each activity layout includes the toolbar with:
+  ```xml
+  <include android:id="@+id/toolbar" layout="@layout/toolbar" />
+  ```
+- In activity code, the toolbar is referenced via view binding as `binding.toolbar.root` and set up with:
+  ```kotlin
+  setSupportActionBar(binding.toolbar.root)
+  ```
+- This approach ensures a consistent look and feel across all screens and simplifies future UI updates.
+
 ### Data Flow
 1. **Create Memo** → User selects location on map → Location saved to database
 2. **Service Start** → LocationService starts automatically when app opens
@@ -125,5 +159,3 @@ This implementation successfully meets all the challenge requirements:
 - Notifications with title and 140-character description
 - Custom notification icon
 - Background operation when app is closed/not running
-
-
