@@ -6,7 +6,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 /**
  * Provides the coroutines application scope and factory methods for creating local scopes used in activities, fragments, components etc.
  */
-internal object ScopeProvider {
+object ScopeProvider {
 
     /**
      * Creates an application scope as an alternative for [GlobalScope] which can be used by other libraries.

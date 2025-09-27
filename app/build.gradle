@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
@@ -16,6 +14,14 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        
+        // Build config fields for API keys
+        buildConfigField "String", "GOOGLE_MAPS_API_KEY", "\"${getApiKey()}\""
+        
+        // Manifest placeholders for API keys
+        manifestPlaceholders = [
+            GOOGLE_MAPS_API_KEY: getApiKey()
+        ]
     }
     buildTypes {
         release {
@@ -24,18 +30,19 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_21
-        targetCompatibility JavaVersion.VERSION_21
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     buildFeatures {
         viewBinding true
+        buildConfig true
     }
 }
 
 kotlin {
     target {
         compilerOptions {
-            jvmTarget = JvmTarget.JVM_21
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
         }
     }
 }
@@ -44,6 +51,9 @@ ext {
     kotlinCoroutinesVersion = '1.10.2'
     roomVersion = '2.7.2'
     lifecycleVersion = '2.9.3'
+    googleMapsVersion = '19.0.0'
+    playServicesLocationVersion = '21.3.0'
+    workManagerVersion = '2.10.0'
 }
 
 dependencies {
@@ -67,7 +77,55 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"
 
+    //Google Maps and Location Services
+    implementation "com.google.android.gms:play-services-maps:$googleMapsVersion"
+    implementation "com.google.android.gms:play-services-location:$playServicesLocationVersion"
+    
+    //WorkManager for background tasks
+    implementation "androidx.work:work-runtime-ktx:$workManagerVersion"
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.3.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
+}
+
+/**
+ * Get API key from environment variables or local.properties
+ * Production: Use environment variables
+ * Development: Use local.properties file
+ */
+def getApiKey() {
+    def apiKey = System.getenv("GOOGLE_MAPS_API_KEY")
+    if (apiKey == null) {
+        // Fallback to local.properties for development
+        def localProperties = new Properties()
+        def localPropertiesFile = rootProject.file('local.properties')
+        if (localPropertiesFile.exists()) {
+            localPropertiesFile.withInputStream { localProperties.load(it) }
+            apiKey = localProperties.getProperty('GOOGLE_MAPS_API_KEY')
+        }
+    }
+    
+    if (apiKey == null) {
+        throw new GradleException("""
+            GOOGLE_MAPS_API_KEY not found!
+            
+            Please set your Google Maps API key using one of these methods:
+            
+            1. Environment Variable (Recommended for CI/CD):
+               export GOOGLE_MAPS_API_KEY=your_api_key_here
+            
+            2. Local Properties (For development):
+               Create local.properties file in project root with:
+               GOOGLE_MAPS_API_KEY=your_api_key_here
+            
+            3. Copy from template:
+               cp local.properties.template local.properties
+               # Then edit local.properties and add your API key
+            
+            Get your API key from: https://console.cloud.google.com/
+            """.stripIndent())
+    }
+    
+    return apiKey
 }
