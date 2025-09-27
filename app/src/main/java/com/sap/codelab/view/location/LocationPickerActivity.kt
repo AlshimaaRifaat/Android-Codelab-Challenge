@@ -18,12 +18,14 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.sap.codelab.R
+import com.sap.codelab.databinding.ActivityLocationPickerBinding
 
 /**
  * Activity for selecting a location on a map for memo reminders.
  */
 class LocationPickerActivity : AppCompatActivity(), OnMapReadyCallback {
 
+    private lateinit var binding: ActivityLocationPickerBinding
     private lateinit var map: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var selectedMarker: Marker? = null
@@ -37,9 +39,10 @@ class LocationPickerActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_location_picker)
+        binding = ActivityLocationPickerBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         
-        setSupportActionBar(findViewById(R.id.toolbar))
+        setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = getString(R.string.select_location)
 
@@ -48,10 +51,9 @@ class LocationPickerActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.confirm_location_fab)
-            .setOnClickListener {
-                confirmLocation()
-            }
+        binding.confirmLocationFab.setOnClickListener {
+            confirmLocation()
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {

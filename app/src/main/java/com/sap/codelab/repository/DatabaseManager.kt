@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.sap.codelab.BuildConfig
 
 /**
  * Production-ready database manager with comprehensive migration handling.
@@ -13,7 +14,6 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 object DatabaseManager {
     
     private const val TAG = "DatabaseManager"
-    private const val DATABASE_NAME = "codelab"
     
     private var database: Database? = null
     
@@ -32,7 +32,7 @@ object DatabaseManager {
     }
     
     private fun createDatabase(context: Context): Database {
-        return Room.databaseBuilder(context, Database::class.java, DATABASE_NAME)
+        return Room.databaseBuilder(context, Database::class.java, BuildConfig.DATABASE_NAME)
             .addMigrations(MIGRATION_1_2)
             .fallbackToDestructiveMigration(true) // For development only
             .addCallback(object : RoomDatabase.Callback() {

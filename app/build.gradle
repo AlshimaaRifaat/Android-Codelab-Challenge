@@ -18,15 +18,22 @@ android {
         // Build config fields for API keys
         buildConfigField "String", "GOOGLE_MAPS_API_KEY", "\"${getApiKey()}\""
         
+        // Database configuration (default)
+        buildConfigField "String", "DATABASE_NAME", "\"codelab\""
+        
         // Manifest placeholders for API keys
         manifestPlaceholders = [
             GOOGLE_MAPS_API_KEY: getApiKey()
         ]
     }
     buildTypes {
+        debug {
+            buildConfigField "String", "DATABASE_NAME", "\"codelab_debug\""
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "DATABASE_NAME", "\"codelab\""
         }
     }
     compileOptions {

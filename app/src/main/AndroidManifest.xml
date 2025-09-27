@@ -53,6 +53,12 @@
             android:exported="false"
             android:foregroundServiceType="location" />
             
+        <!-- Notification Action Receiver -->
+        <receiver
+            android:name="com.sap.codelab.service.NotificationActionReceiver"
+            android:enabled="true"
+            android:exported="false" />
+            
     </application>
 
 </manifest>
