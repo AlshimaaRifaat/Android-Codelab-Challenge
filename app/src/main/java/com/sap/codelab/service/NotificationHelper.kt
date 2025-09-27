@@ -27,10 +27,10 @@ class NotificationHelper(private val context: Context) {
         private const val NOTIFICATION_ID_LOCATION_SERVICE = 1001
         private const val NOTIFICATION_ID_MEMO_BASE = 2000
         
-        // Actions
-        private const val ACTION_VIEW_MEMO = "action_view_memo"
-        private const val ACTION_MARK_DONE = "action_mark_done"
-        private const val ACTION_SNOOZE = "action_snooze"
+        // Actions (public so NotificationActionReceiver can access them)
+        const val ACTION_VIEW_MEMO = "action_view_memo"
+        const val ACTION_MARK_DONE = "action_mark_done"
+        const val ACTION_SNOOZE = "action_snooze"
         
         // Request codes
         private const val REQUEST_CODE_VIEW_MEMO = 1001
