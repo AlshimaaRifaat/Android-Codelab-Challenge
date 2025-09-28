@@ -102,13 +102,6 @@ class CreateMemoViewModel(
     fun clearError() {
         _uiState.value = _uiState.value.copy(error = null)
     }
-
-    /**
-     * Resets the save state.
-     */
-    fun resetSaveState() {
-        _uiState.value = _uiState.value.copy(isSaved = false)
-    }
 }
 
 /**

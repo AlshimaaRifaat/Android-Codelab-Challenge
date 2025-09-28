@@ -76,30 +76,5 @@ object MemoValidator {
             else -> Result.success(id)
         }
     }
-    
-    /**
-     * Sanitizes input string by removing dangerous characters
-     */
-    fun sanitizeInput(input: String): String {
-        return input
-            .trim()
-            .replace(Regex("[<>\"'&]"), "") // Remove potentially dangerous characters
-            .replace(Regex("\\s+"), " ") // Replace multiple spaces with single space
-    }
-    
-    /**
-     * Validates and sanitizes title
-     */
-    fun validateAndSanitizeTitle(title: String): Result<String> {
-        val sanitized = sanitizeInput(title)
-        return validateTitle(sanitized)
-    }
-    
-    /**
-     * Validates and sanitizes description
-     */
-    fun validateAndSanitizeDescription(description: String): Result<String> {
-        val sanitized = sanitizeInput(description)
-        return validateDescription(sanitized)
-    }
+
 }

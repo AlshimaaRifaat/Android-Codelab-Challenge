@@ -1,13 +1,10 @@
 package com.sap.codelab.service
 
 import android.Manifest
-import android.app.NotificationManager
-import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
-import android.os.Build
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
@@ -36,8 +33,6 @@ class LocationService : Service() {
 
     companion object {
         private const val NOTIFICATION_ID = 1001
-        private const val CHANNEL_ID = "location_service_channel"
-        private const val PROXIMITY_THRESHOLD_METERS = 200.0
     }
 
     override fun onCreate() {

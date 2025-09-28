@@ -93,30 +93,4 @@ sealed class AppError : Exception() {
         is SystemError.PermissionDenied -> "Permission denied."
         is SystemError.UnknownError -> "An unexpected error occurred: ${message}"
     }
-    
-    /**
-     * Gets a technical error message for logging
-     */
-    fun getTechnicalMessage(): String = when (this) {
-        is NetworkError.HttpError -> "HTTP ${code}: ${message}"
-        is DatabaseError.QueryFailed -> "Database query failed: ${message}"
-        is ValidationError.CustomValidationError -> "Validation error: ${message}"
-        is SystemError.UnknownError -> "Unknown error: ${message}"
-        else -> this::class.simpleName ?: "Unknown error"
-    }
-    
-    /**
-     * Determines if the error is recoverable
-     */
-    fun isRecoverable(): Boolean = when (this) {
-        is NetworkError.NoInternetConnection,
-        is NetworkError.Timeout,
-        is NetworkError.ServerError,
-        is DatabaseError.DatabaseLocked,
-        is SystemError.LocationServiceUnavailable -> true
-        
-        is NetworkError.HttpError -> code in 500..599 // Server errors are usually recoverable
-        
-        else -> false
-    }
 }
