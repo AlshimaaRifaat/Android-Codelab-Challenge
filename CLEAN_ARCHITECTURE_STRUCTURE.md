@@ -1,5 +1,27 @@
 # Clean Architecture Structure
 
+## 🏗️ **Technologies Used**
+
+### **Core Technologies:**
+- **Kotlin**: Primary programming language
+- **Android Jetpack**: Modern Android development toolkit
+- **Room Database**: Local data persistence
+- **Coroutines**: Asynchronous programming
+- **StateFlow**: Reactive state management
+- **Material Design**: UI components and theming
+
+### **Architecture Patterns:**
+- **Clean Architecture**: Layered architecture with dependency inversion
+- **MVVM (Model-View-ViewModel)**: Presentation layer pattern
+- **Repository Pattern**: Data access abstraction
+- **Use Case Pattern**: Business logic encapsulation
+- **Dependency Injection**: Manual DI container
+
+### **Testing Framework:**
+- **JUnit 4**: Unit testing framework
+- **Kotlin Coroutines Test**: Coroutine testing utilities
+- **AndroidX Test**: Android testing libraries
+- **Mock Repository**: Test doubles for isolated testing
 
 ##  **Clean Architecture Layers**
 
@@ -38,6 +60,9 @@
 - Domain layer is pure Kotlin (no Android dependencies)
 - Use cases can be unit tested easily
 - Repository interfaces allow for mocking
+- **Comprehensive Unit Testing**: 22 unit tests covering all ViewModels
+- **Test Coverage**: Initial states, validation logic, error handling
+- **Isolated Testing**: Mock repositories for dependency-free testing
 
 ### **Scalability**
 - Easy to add new features
@@ -54,6 +79,20 @@
 - Presentation depends on Domain
 - Data depends on Domain
 - Domain depends on nothing (pure business logic)
+
+## 🧪 **Unit Testing Implementation**
+
+### **Test Structure:**
+- **3 Separate Test Classes**: One for each ViewModel
+- **Mock Repositories**: Isolated testing without external dependencies
+- **Coroutine Testing**: Proper async testing with `StandardTestDispatcher`
+
+
+### **Testing Technologies:**
+- **JUnit 4**: Core testing framework
+- **Kotlin Coroutines Test**: Async testing utilities
+- **AndroidX Test**: Android-specific testing libraries
+- **Mock Repository Pattern**: Test doubles for isolated testing
 
 ## **Clean Architecture Principles Applied**
 
