@@ -21,7 +21,7 @@ internal class ViewMemo : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityViewMemoBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setSupportActionBar(binding.toolbar)
+        setSupportActionBar(binding.toolbar.root)
         // Initialize views with the passed memo id
         val model = ViewModelProvider(this)[ViewMemoViewModel::class.java]
         if (savedInstanceState == null) {

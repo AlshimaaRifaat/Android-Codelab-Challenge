@@ -1,14 +1,23 @@
 package com.sap.codelab.view.create
 
+import android.Manifest
+import android.app.Activity
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.appcompat.app.AppCompatActivity
 import androidx.annotation.StringRes
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.sap.codelab.R
 import com.sap.codelab.databinding.ActivityCreateMemoBinding
+import com.sap.codelab.view.location.LocationPickerActivity
 import com.sap.codelab.utils.extensions.empty
+import com.sap.codelab.utils.extensions.showToast
 
 /**
  * Activity that allows a user to create a new Memo.
@@ -17,13 +26,28 @@ internal class CreateMemo : AppCompatActivity() {
 
     private lateinit var binding: ActivityCreateMemoBinding
     private lateinit var model: CreateMemoViewModel
+    private var selectedLatitude: Double = 0.0
+    private var selectedLongitude: Double = 0.0
+
+    private val locationPickerLauncher = registerForActivityResult(
+        StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val data = result.data
+            selectedLatitude = data?.getDoubleExtra(LocationPickerActivity.EXTRA_LATITUDE, 0.0) ?: 0.0
+            selectedLongitude = data?.getDoubleExtra(LocationPickerActivity.EXTRA_LONGITUDE, 0.0) ?: 0.0
+            updateLocationUI()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCreateMemoBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setSupportActionBar(binding.toolbar)
+        setSupportActionBar(binding.toolbar.root)
         model = ViewModelProvider(this)[CreateMemoViewModel::class.java]
+        
+        setupLocationSelection()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -45,12 +69,92 @@ internal class CreateMemo : AppCompatActivity() {
         }
     }
 
+    private fun setupLocationSelection() {
+        binding.contentCreateMemo.apply {
+            selectLocationButton.setOnClickListener {
+                if (checkLocationPermission()) {
+                    openLocationPicker()
+                } else {
+                    requestLocationPermission()
+                }
+            }
+            
+            clearLocationButton.setOnClickListener {
+                clearLocation()
+            }
+        }
+    }
+
+    private fun openLocationPicker() {
+        val intent = Intent(this, LocationPickerActivity::class.java)
+        locationPickerLauncher.launch(intent)
+    }
+
+    private fun updateLocationUI() {
+        binding.contentCreateMemo.apply {
+            if (selectedLatitude != 0.0 && selectedLongitude != 0.0) {
+                selectedLocationText.text = getString(R.string.location_selected, selectedLatitude, selectedLongitude)
+                selectedLocationText.visibility = android.view.View.VISIBLE
+                clearLocationButton.visibility = android.view.View.VISIBLE
+            } else {
+                selectedLocationText.visibility = android.view.View.GONE
+                clearLocationButton.visibility = android.view.View.GONE
+            }
+        }
+    }
+
+    private fun clearLocation() {
+        selectedLatitude = 0.0
+        selectedLongitude = 0.0
+        updateLocationUI()
+    }
+
+    private fun checkLocationPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestLocationPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+            1001
+        )
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1001) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openLocationPicker()
+            } else {
+                showToast(getString(R.string.location_permission_required))
+            }
+        }
+    }
+
     /**
      * Saves the memo if the input is valid; otherwise shows the corresponding error messages.
      */
     private fun saveMemo() {
         binding.contentCreateMemo.run {
-            model.updateMemo(memoTitle.text.toString(), memoDescription.text.toString())
+            if (selectedLatitude != 0.0 && selectedLongitude != 0.0) {
+                model.updateMemoWithLocation(
+                    memoTitle.text.toString(),
+                    memoDescription.text.toString(),
+                    selectedLatitude,
+                    selectedLongitude
+                )
+            } else {
+                model.updateMemo(memoTitle.text.toString(), memoDescription.text.toString())
+            }
+            
             if (model.isMemoValid()) {
                 model.saveMemo()
                 setResult(RESULT_OK)

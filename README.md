@@ -4,6 +4,33 @@ The base is written in kotlin.
 
 (!)If you have the NDK plugin installed, please disable it for the project, as errors may occur.
 
+### Prerequisites
+- Android Studio (Narwhal Feature Drop or higher)
+- Google Maps API Key
+
+### Setup
+1. **Get Google Maps API Key**:
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Enable "Maps SDK for Android" API
+   - Create API Key with Android app restrictions
+
+2. **Configure API Key**:
+   ```bash
+   # Copy template
+   cp local.properties.template local.properties
+   
+   # Edit local.properties and add your API key
+   GOOGLE_MAPS_API_KEY=your_actual_api_key_here
+   ```
+
+3. **Build and Run**:
+   ```bash
+   ./gradlew build
+   ./gradlew installDebug
+   ```
+
+📖 **Detailed setup instructions**: See [DEVELOPER_SETUP.md](DEVELOPER_SETUP.md)
+
 # Android Coding Challenges
 Coding challenges are useful when the applicant does not provide a github repository or any work samples. Even if a github repository has been provided it is generally a good idea to give the applicant a task to solve and have him present his solution in a separate session. 
 

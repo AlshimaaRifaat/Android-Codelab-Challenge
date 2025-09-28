@@ -1,0 +1,162 @@
+package com.sap.codelab.view.location
+
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
+import com.sap.codelab.R
+import com.sap.codelab.databinding.ActivityLocationPickerBinding
+import com.sap.codelab.utils.extensions.hasLocationPermission
+import com.sap.codelab.utils.extensions.showToast
+
+/**
+ * Activity for selecting a location on a map for memo reminders.
+ */
+class LocationPickerActivity : AppCompatActivity(), OnMapReadyCallback {
+
+    private lateinit var binding: ActivityLocationPickerBinding
+    private lateinit var map: GoogleMap
+    private val fusedLocationClient: FusedLocationProviderClient by lazy {
+        LocationServices.getFusedLocationProviderClient(this)
+    }
+    private var selectedMarker: Marker? = null
+    private var selectedLocation: LatLng? = null
+
+    companion object {
+        const val EXTRA_LATITUDE = "extra_latitude"
+        const val EXTRA_LONGITUDE = "extra_longitude"
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityLocationPickerBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar.root)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = getString(R.string.select_location)
+
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+
+        // Request location permission and get current location
+        if (!hasLocationPermission) {
+            requestLocationPermission()
+        }
+        binding.confirmLocationFab.setOnClickListener {
+            confirmLocation()
+        }
+    }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        map = googleMap
+        map.uiSettings.isZoomControlsEnabled = true
+        map.uiSettings.isMyLocationButtonEnabled = true
+
+        // Set up map click listener
+        map.setOnMapClickListener { latLng ->
+            selectLocation(latLng)
+        }
+
+        // Request location permission and get current location
+        if (checkLocationPermission()) {
+            getCurrentLocation()
+        } else {
+            requestLocationPermission()
+        }
+    }
+
+    private fun selectLocation(latLng: LatLng) {
+        selectedLocation = latLng
+
+        // Remove previous marker
+        selectedMarker?.remove()
+
+        // Add new marker
+        selectedMarker = map.addMarker(
+            MarkerOptions()
+                .position(latLng)
+                .title("Selected Location")
+        )
+
+        // Move camera to selected location
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+    }
+
+    private fun confirmLocation() {
+        selectedLocation?.let { location ->
+            val resultIntent = Intent().apply {
+                putExtra(EXTRA_LATITUDE, location.latitude)
+                putExtra(EXTRA_LONGITUDE, location.longitude)
+            }
+            setResult(RESULT_OK, resultIntent)
+            finish()
+        } ?: run {
+            showToast("Please select a location on the map")
+        }
+    }
+
+    private fun checkLocationPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestLocationPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+            LOCATION_PERMISSION_REQUEST_CODE
+        )
+    }
+
+    private fun getCurrentLocation() {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            location?.let {
+                val currentLatLng = LatLng(it.latitude, it.longitude)
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getCurrentLocation()
+            } else {
+                showToast(getString(R.string.location_permission_required))
+            }
+        }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
+    }
+}

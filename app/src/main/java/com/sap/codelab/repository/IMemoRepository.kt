@@ -5,7 +5,7 @@ import com.sap.codelab.model.Memo
 /**
  * Interface for a repository offering memo related CRUD operations.
  */
-internal interface IMemoRepository {
+interface IMemoRepository {
 
     /**
      * Saves the given memo to the database.
@@ -18,6 +18,11 @@ internal interface IMemoRepository {
     fun getAll(): List<Memo>
 
     /**
+     * @return all memos currently in the database (alias for getAll).
+     */
+    fun getAllMemos(): List<Memo>
+
+    /**
      * @return all memos currently in the database, except those that have been marked as "done".
      */
     fun getOpen(): List<Memo>
@@ -26,4 +31,9 @@ internal interface IMemoRepository {
      * @return the memo whose id matches the given id.
      */
     fun getMemoById(id: Long): Memo
+
+    /**
+     * Marks a memo as done.
+     */
+    fun markMemoAsDone(id: Long)
 }

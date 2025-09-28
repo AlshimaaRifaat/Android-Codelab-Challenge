@@ -13,6 +13,8 @@ import androidx.lifecycle.coroutineScope
 import com.sap.codelab.R
 import com.sap.codelab.databinding.ActivityHomeBinding
 import com.sap.codelab.model.Memo
+import com.sap.codelab.service.ServiceManager
+import com.sap.codelab.utils.DebugHelper
 import com.sap.codelab.view.create.CreateMemo
 import com.sap.codelab.view.detail.BUNDLE_MEMO_ID
 import com.sap.codelab.view.detail.ViewMemo
@@ -37,7 +39,7 @@ internal class Home : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setSupportActionBar(binding.toolbar)
+        setSupportActionBar(binding.toolbar.root)
         model = ViewModelProvider(this)[HomeViewModel::class.java]
 
         // Setup the adapter and the recycler view
@@ -48,6 +50,14 @@ internal class Home : AppCompatActivity() {
             createMemoLauncher.launch(Intent(this@Home, CreateMemo::class.java))
         }
         model.loadOpenMemos()
+        
+        // Start location service for background monitoring
+        ServiceManager.startLocationService(this)
+        
+        // Debug: Log initial state
+        DebugHelper.logLocationPermissions(this)
+        DebugHelper.logNotificationChannels(this)
+        DebugHelper.logAllMemos(this)
     }
 
     /**

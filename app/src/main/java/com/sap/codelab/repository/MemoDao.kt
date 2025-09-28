@@ -10,7 +10,7 @@ import com.sap.codelab.model.Memo
  * The Dao representation of a Memo.
  */
 @Dao
-internal interface MemoDao {
+interface MemoDao {
 
     /**
      * @return all memos that are currently in the database.
@@ -35,4 +35,10 @@ internal interface MemoDao {
      */
     @Query("SELECT * FROM memo WHERE id = :memoId")
     fun getMemoById(memoId: Long): Memo
+
+    /**
+     * Marks a memo as done by setting isDone to true.
+     */
+    @Query("UPDATE memo SET isDone = 1 WHERE id = :memoId")
+    fun markAsDone(memoId: Long)
 }
