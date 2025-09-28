@@ -135,11 +135,7 @@ class HomeViewModel(
             "withLocation" to memos.count { it.hasLocation() }
         )
     }
-    
-    /**
-     * Gets memo statistics (demonstrates lazy property access).
-     */
-    fun getMemoStatistics(): Map<String, Int> = _memoStatistics
+
 }
 
 /**
