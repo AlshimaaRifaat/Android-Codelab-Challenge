@@ -24,10 +24,7 @@ The base is written in kotlin.
    ```
 
 3. **Build and Run**:
-   ```bash
-   ./gradlew build
-   ./gradlew installDebug
-   ```
+ 
 
 📖 **Detailed setup instructions**: See [DEVELOPER_SETUP.md](DEVELOPER_SETUP.md)
 
