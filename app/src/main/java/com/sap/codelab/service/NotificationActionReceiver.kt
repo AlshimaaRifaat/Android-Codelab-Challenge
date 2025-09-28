@@ -4,10 +4,10 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import com.sap.codelab.repository.Repository
+import com.sap.codelab.di.SimpleDIContainer
 import com.sap.codelab.utils.coroutines.ScopeProvider
-import com.sap.codelab.view.detail.BUNDLE_MEMO_ID
-import com.sap.codelab.view.detail.ViewMemo
+import com.sap.codelab.presentation.view.detail.BUNDLE_MEMO_ID
+import com.sap.codelab.presentation.view.detail.ViewMemo
 import kotlinx.coroutines.launch
 
 /**
@@ -64,8 +64,20 @@ class NotificationActionReceiver : BroadcastReceiver() {
     private fun markMemoAsDone(memoId: Long) {
         ScopeProvider.application.launch {
             try {
-                Repository.markMemoAsDone(memoId)
-                Log.d(TAG, "Marked memo as done: $memoId")
+                val repository = SimpleDIContainer.getMemoRepository()
+                val result = repository.markMemoAsDone(memoId)
+                
+                when (result) {
+                    is com.sap.codelab.utils.Result.Success -> {
+                        Log.d(TAG, "Marked memo as done: $memoId")
+                    }
+                    is com.sap.codelab.utils.Result.Error -> {
+                        Log.e(TAG, "Failed to mark memo as done: ${result.appError.getUserMessage()}")
+                    }
+                    is com.sap.codelab.utils.Result.Loading -> {
+                        Log.d(TAG, "Marking memo as done...")
+                    }
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to mark memo as done: ${e.message}", e)
             }

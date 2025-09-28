@@ -1,8 +1,6 @@
 package com.sap.codelab.service
 
 import android.Manifest
-import android.app.Notification
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
@@ -14,16 +12,14 @@ import android.os.IBinder
 import android.os.Looper
 import android.util.Log
 import androidx.core.app.ActivityCompat
-import androidx.core.app.NotificationCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
-import com.sap.codelab.R
-import com.sap.codelab.model.Memo
-import com.sap.codelab.repository.Repository
+import com.sap.codelab.domain.entity.MemoEntity
+import com.sap.codelab.di.SimpleDIContainer
 import com.sap.codelab.utils.coroutines.ScopeProvider
 import com.sap.codelab.utils.DebugHelper
 import kotlinx.coroutines.launch
@@ -95,15 +91,28 @@ class LocationService : Service() {
     private fun checkProximityToMemos(currentLocation: Location) {
         ScopeProvider.application.launch {
             try {
-                val memos = Repository.getAllMemos()
-                Log.d("LocationService", "Checking ${memos.size} memos for proximity")
+                val repository = SimpleDIContainer.getMemoRepository()
+                val result = repository.getAllMemos()
                 
-                memos.forEach { memo ->
-                    if (DebugHelper.shouldTriggerNotification(currentLocation, memo)) {
-                        Log.d("LocationService", "Triggering notification for memo: ${memo.title}")
-                        showMemoNotification(memo)
-                        // Mark memo as done to prevent duplicate notifications
-                        Repository.markMemoAsDone(memo.id)
+                when (result) {
+                    is com.sap.codelab.utils.Result.Success -> {
+                        val memos = result.data
+                        Log.d("LocationService", "Checking ${memos.size} memos for proximity")
+                        
+                        memos.forEach { memo ->
+                            if (DebugHelper.shouldTriggerNotification(currentLocation, memo)) {
+                                Log.d("LocationService", "Triggering notification for memo: ${memo.title}")
+                                showMemoNotification(memo)
+                                // Mark memo as done to prevent duplicate notifications
+                                repository.markMemoAsDone(memo.id)
+                            }
+                        }
+                    }
+                    is com.sap.codelab.utils.Result.Error -> {
+                        Log.e("LocationService", "Error getting memos: ${result.appError.getUserMessage()}")
+                    }
+                    is com.sap.codelab.utils.Result.Loading -> {
+                        Log.d("LocationService", "Loading memos...")
                     }
                 }
             } catch (e: Exception) {
@@ -112,7 +121,7 @@ class LocationService : Service() {
         }
     }
 
-    private fun showMemoNotification(memo: Memo) {
+    private fun showMemoNotification(memo: MemoEntity) {
         val notificationText = if (memo.description.length > 140) {
             memo.description.substring(0, 140) + "..."
         } else {

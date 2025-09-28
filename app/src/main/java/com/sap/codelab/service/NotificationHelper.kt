@@ -10,8 +10,8 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.sap.codelab.R
-import com.sap.codelab.view.detail.ViewMemo
-import com.sap.codelab.view.detail.BUNDLE_MEMO_ID
+import com.sap.codelab.presentation.view.detail.ViewMemo
+import com.sap.codelab.presentation.view.detail.BUNDLE_MEMO_ID
 
 /**
  * Production-ready notification helper with comprehensive features.
@@ -111,7 +111,7 @@ class NotificationHelper(private val context: Context) {
      * Shows the location service notification.
      */
     fun showLocationServiceNotification(): NotificationCompat.Builder {
-        val intent = Intent(context, com.sap.codelab.view.home.Home::class.java)
+        val intent = Intent(context, com.sap.codelab.presentation.view.home.Home::class.java)
         val pendingIntent = PendingIntent.getActivity(
             context, 0, intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE

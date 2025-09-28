@@ -3,8 +3,8 @@ package com.sap.codelab.utils
 import android.content.Context
 import android.location.Location
 import android.util.Log
-import com.sap.codelab.model.Memo
-import com.sap.codelab.repository.Repository
+import com.sap.codelab.domain.entity.MemoEntity
+import com.sap.codelab.di.SimpleDIContainer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,18 +22,31 @@ object DebugHelper {
     fun logAllMemos(context: Context) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val memos = Repository.getAllMemos()
-                Log.d(TAG, "=== ALL MEMOS ===")
-                memos.forEach { memo ->
-                    Log.d(TAG, "Memo ID: ${memo.id}")
-                    Log.d(TAG, "Title: ${memo.title}")
-                    Log.d(TAG, "Description: ${memo.description}")
-                    Log.d(TAG, "Latitude: ${memo.reminderLatitude}")
-                    Log.d(TAG, "Longitude: ${memo.reminderLongitude}")
-                    Log.d(TAG, "Is Done: ${memo.isDone}")
-                    Log.d(TAG, "---")
+                val repository = SimpleDIContainer.getMemoRepository()
+                val result = repository.getAllMemos()
+                
+                when (result) {
+                    is com.sap.codelab.utils.Result.Success -> {
+                        val memos = result.data
+                        Log.d(TAG, "=== ALL MEMOS ===")
+                        memos.forEach { memo ->
+                            Log.d(TAG, "Memo ID: ${memo.id}")
+                            Log.d(TAG, "Title: ${memo.title}")
+                            Log.d(TAG, "Description: ${memo.description}")
+                            Log.d(TAG, "Latitude: ${memo.reminderLatitude}")
+                            Log.d(TAG, "Longitude: ${memo.reminderLongitude}")
+                            Log.d(TAG, "Is Done: ${memo.isDone}")
+                            Log.d(TAG, "---")
+                        }
+                        Log.d(TAG, "Total memos: ${memos.size}")
+                    }
+                    is com.sap.codelab.utils.Result.Error -> {
+                        Log.e(TAG, "Error getting memos: ${result.appError.getUserMessage()}")
+                    }
+                    is com.sap.codelab.utils.Result.Loading -> {
+                        Log.d(TAG, "Loading memos...")
+                    }
                 }
-                Log.d(TAG, "Total memos: ${memos.size}")
             } catch (e: Exception) {
                 Log.e(TAG, "Error logging memos: ${e.message}")
             }
@@ -52,7 +65,7 @@ object DebugHelper {
     /**
      * Check if location service should trigger notification for a memo.
      */
-    fun shouldTriggerNotification(currentLocation: Location, memo: Memo): Boolean {
+    fun shouldTriggerNotification(currentLocation: Location, memo: MemoEntity): Boolean {
         if (memo.isDone) {
             Log.d(TAG, "Memo '${memo.title}' is already done, skipping")
             return false
