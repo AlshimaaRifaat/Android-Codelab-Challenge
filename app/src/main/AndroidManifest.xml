@@ -1,16 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.sap.codelab">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Location permissions -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
 
     <application
-        android:name=".repository.App"
+        android:name=".di.App"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <!-- Google Maps API Key -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${GOOGLE_MAPS_API_KEY}" />
         <activity
-            android:name="com.sap.codelab.view.home.Home"
+            android:name="com.sap.codelab.presentation.view.home.Home"
             android:exported="true"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -20,14 +33,32 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.sap.codelab.view.create.CreateMemo"
+            android:name="com.sap.codelab.presentation.view.create.CreateMemo"
             android:exported="false"
             android:label="@string/new_memo"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.sap.codelab.view.detail.ViewMemo"
+            android:name="com.sap.codelab.presentation.view.detail.ViewMemo"
             android:exported="false"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.sap.codelab.presentation.view.location.LocationPickerActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme.NoActionBar" />
+        
+        <!-- Location Service -->
+        <service
+            android:name="com.sap.codelab.service.LocationService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="location" />
+            
+        <!-- Notification Action Receiver -->
+        <receiver
+            android:name="com.sap.codelab.service.NotificationActionReceiver"
+            android:enabled="true"
+            android:exported="false" />
+            
     </application>
 
 </manifest>

@@ -9,3 +9,13 @@
 .externalNativeBuild
 .idea
 app/local.properties
+
+# API Keys and sensitive data
+.env
+*.env
+secrets.properties
+api-keys.properties
+
+# Build artifacts
+*.apk
+*.aab
